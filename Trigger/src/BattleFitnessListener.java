@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
 import robocode.BattleResults;
 import robocode.control.events.BattleAdaptor;
 import robocode.control.events.BattleCompletedEvent;
@@ -15,23 +19,39 @@ import robocode.control.events.TurnStartedEvent;
 
 public class BattleFitnessListener extends BattleAdaptor {
 
+	// public Score score = new Score();
+
 	@Override
 	public void onBattleCompleted(BattleCompletedEvent event) {
 		int trackerScore = 0, ramScore = 0;
-
+		// Score score = new Score();
+		GA robot = new GA(trackerScore, ramScore);
 		for (BattleResults result : event.getSortedResults()) {
 			if ("robots.SuperRamFire*".equals(result.getTeamLeaderName())) {
 				System.out.println("SuperRam score " + result.getScore());
 				// robot.setScoreToSuperRamFire(result.getScore());
 				ramScore = result.getScore();
+				// robot.score.setSuperRamFireScore(ramScore);
 			} else {
 				// robot.setScoreToSuperTracker(result.getScore());
 				trackerScore = result.getScore();
 				System.out.println("SuperTracker score " + result.getScore());
+				// robot.score.setSuperTrackerScore(trackerScore);
 			}
 		}
-		
-		GA robot = new GA(trackerScore, ramScore);
+		PrintWriter pw = null;
+		try {
+			pw = new PrintWriter(new File("Scores.txt"));
+			pw.println(ramScore);
+			pw.print(trackerScore);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (pw != null) {
+				pw.close();
+			}
+		}
 
 	}
 

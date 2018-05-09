@@ -8,10 +8,12 @@ import org.jgap.*;
 import org.jgap.impl.*;
 import org.omg.CORBA.DoubleSeqHolder;
 
+import robocode.BattleResults;
 import robocode.control.*;
 
 public class GA extends FitnessFunction {
 
+	public Score score = new Score();
 	private int SuperTrackerScore;
 	private int SuperRamFireScore;
 
@@ -21,12 +23,10 @@ public class GA extends FitnessFunction {
 	}
 
 	private void writeToFile(IChromosome chromosome) {
-		System.out.println("Zapisujem");
 		double[] parameter = new double[4];
 		int j = 0;
 		for (Gene gene : chromosome.getGenes()) {
 			parameter[j] = (double) gene.getAllele();
-			System.out.println(parameter[j]);
 			j++;
 		}
 
@@ -95,6 +95,8 @@ public class GA extends FitnessFunction {
 		}
 
 		writeToFile(fittestSolution); // pass best solution to build
+		System.exit(0);
+		;
 
 	}
 
@@ -123,7 +125,25 @@ public class GA extends FitnessFunction {
 		engine.runBattle(battleSpec, true);
 		engine.close();
 
-		double fitnesValue = SuperTrackerScore;
+		Scanner sc = null;
+		try {
+			sc = new Scanner(new File("Scores.txt"));
+			System.out.println("Citam................");
+			SuperRamFireScore = sc.nextInt();
+			SuperTrackerScore = sc.nextInt();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sc != null) {
+				sc.close();
+			}
+		}
+
+		double fitnesValue = SuperTrackerScore / (SuperRamFireScore + SuperTrackerScore);
+
+		System.out.println(SuperRamFireScore);
+		System.out.println(SuperTrackerScore);
 
 		return fitnesValue;
 	}
